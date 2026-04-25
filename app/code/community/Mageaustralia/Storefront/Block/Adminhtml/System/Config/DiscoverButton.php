@@ -51,6 +51,7 @@ async function storefrontDiscover(btn) {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'api_token=' + encodeURIComponent(apiToken)
                 + '&api_email=' + encodeURIComponent(apiEmail)
+                + '&form_key=' + encodeURIComponent(FORM_KEY)
         });
 
         if (!r.success) {

@@ -31,7 +31,11 @@ async function storefrontTestConnection(btn) {
     resultEl.innerHTML = 'Testing...';
     resultEl.style.color = '#666';
     try {
-        var r = await mahoFetch('{$url}', { method: 'POST' });
+        var r = await mahoFetch('{$url}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'form_key=' + encodeURIComponent(FORM_KEY)
+        });
         if (r.success) {
             resultEl.innerHTML = '&#10003; Connected';
             resultEl.style.color = 'green';
