@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageaustralia_Storefront
+ *
+ * Cloudflare Workers + KV sync for Maho headless storefronts.
+ *
+ * @package    Mageaustralia_Storefront
+ * @copyright  Copyright (c) 2026 Mage Australia Pty Ltd
+ * @license    OSL-3.0
+ */
+-->
+<config>
+    <modules>
+        <Mageaustralia_Storefront>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Mageaustralia_Storefront>
+    </modules>
+</config>

@@ -1,0 +1,42 @@
+{
+    "name": "mageaustralia/maho-storefront-module",
+    "description": "Cloudflare Workers + KV sync companion module for the Maho Storefront. Manages worker deploy, content sync (CMS pages, blog, categories, products), and the admin dashboard.",
+    "type": "maho-module",
+    "license": "OSL-3.0",
+    "homepage": "https://github.com/mageaustralia/maho-storefront-module",
+    "authors": [
+        {
+            "name": "Mage Australia",
+            "email": "dev@mageaustralia.com.au",
+            "homepage": "https://mageaustralia.com.au"
+        }
+    ],
+    "keywords": [
+        "maho",
+        "openmage",
+        "magento",
+        "cloudflare",
+        "workers",
+        "kv",
+        "storefront",
+        "headless"
+    ],
+    "require": {
+        "php": ">=8.3",
+        "mahocommerce/maho": ">=26.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Mageaustralia_Storefront_": "app/code/community/"
+        }
+    },
+    "extra": {
+        "map": [
+            ["app/code/community/Mageaustralia/Storefront", "app/code/community/Mageaustralia/Storefront"],
+            ["app/design/adminhtml/default/default/layout/mageaustralia_storefront.xml", "app/design/adminhtml/default/default/layout/mageaustralia_storefront.xml"],
+            ["app/design/adminhtml/default/default/template/mageaustralia/storefront", "app/design/adminhtml/default/default/template/mageaustralia/storefront"],
+            ["app/etc/modules/Mageaustralia_Storefront.xml", "app/etc/modules/Mageaustralia_Storefront.xml"],
+            ["app/locale/en_US/Mageaustralia_Storefront.csv", "app/locale/en_US/Mageaustralia_Storefront.csv"]
+        ]
+    }
+}
