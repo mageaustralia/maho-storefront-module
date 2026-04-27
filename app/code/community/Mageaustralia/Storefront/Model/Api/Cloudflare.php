@@ -6,8 +6,8 @@ declare(strict_types=1);
  * Mageaustralia
  *
  * @package    Mageaustralia_Storefront
- * @copyright  Copyright (c) 2026 Mageaustralia
- * @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright  Copyright (c) 2026 Mage Australia Pty Ltd (https://mageaustralia.com.au)
+ * @license    AGPL-3.0-only Open source release; commercial licence available. See LICENSE-COMMERCIAL.md.
  */
 
 use Symfony\Component\HttpClient\HttpClient;
@@ -205,7 +205,7 @@ class Mageaustralia_Storefront_Model_Api_Cloudflare
     }
 
     /**
-     * PUT with raw string body — for KV writes (not JSON-wrapped)
+     * PUT with raw string body - for KV writes (not JSON-wrapped)
      *
      * @throws Mage_Core_Exception
      */
@@ -234,7 +234,7 @@ class Mageaustralia_Storefront_Model_Api_Cloudflare
     }
 
     /**
-     * GET that returns raw string content — for KV reads
+     * GET that returns raw string content - for KV reads
      *
      * @throws Mage_Core_Exception
      */

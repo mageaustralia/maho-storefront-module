@@ -6,8 +6,8 @@ declare(strict_types=1);
  * Mageaustralia
  *
  * @package    Mageaustralia_Storefront
- * @copyright  Copyright (c) 2026 Mageaustralia
- * @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright  Copyright (c) 2026 Mage Australia Pty Ltd (https://mageaustralia.com.au)
+ * @license    AGPL-3.0-only Open source release; commercial licence available. See LICENSE-COMMERCIAL.md.
  */
 
 class Mageaustralia_Storefront_Helper_Data extends Mage_Core_Helper_Abstract
@@ -227,7 +227,7 @@ class Mageaustralia_Storefront_Helper_Data extends Mage_Core_Helper_Abstract
         $storeName = $params['store_name'] ?? '';
         $storeUrl = $params['storefront_url'] ?? '';
 
-        // Build DEMO_STORES JSON — start with existing stores from registry, add the new one
+        // Build DEMO_STORES JSON - start with existing stores from registry, add the new one
         $demoStores = [];
         try {
             $registry = $this->getStoreRegistry();
@@ -315,7 +315,7 @@ TOML;
         }
         $pathPrefix = $nodeBin !== '' ? 'PATH=' . escapeshellarg($nodeBin) . ':$PATH ' : '';
 
-        // Build JS if missing (esbuild — fast, no TTY issues)
+        // Build JS if missing (esbuild - fast, no TTY issues)
         $jsFile = $sfDir . '/public/controllers.js.txt';
         $cssFile = $sfDir . '/public/styles.css';
         $buildOutput = '';
@@ -328,7 +328,7 @@ TOML;
             $buildOutput .= shell_exec($buildCmd) ?? '';
         }
         if (!is_file($cssFile) || filesize($cssFile) === 0) {
-            $buildOutput .= "Warning: CSS not built — run 'npm run build:css' manually on first deploy\n";
+            $buildOutput .= "Warning: CSS not built - run 'npm run build:css' manually on first deploy\n";
         }
 
         // Deploy to Cloudflare

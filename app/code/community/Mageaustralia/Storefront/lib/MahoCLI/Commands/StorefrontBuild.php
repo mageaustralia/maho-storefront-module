@@ -5,7 +5,7 @@
  *
  * @package    MahoCLI_Commands
  * @copyright  Copyright (c) 2024-2026 Maho (https://mahocommerce.com)
- * @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @license    AGPL-3.0-only Open source release; commercial licence available. See LICENSE-COMMERCIAL.md.
  */
 
 declare(strict_types=1);
@@ -146,7 +146,7 @@ class StorefrontBuild extends BaseMahoCommand
             if ($this->purgeCloudflareCache($cfCredentials, $output)) {
                 $output->writeln('<info>Cache purged successfully.</info>');
             } else {
-                $output->writeln('<comment>Cache purge failed — you may need to purge manually.</comment>');
+                $output->writeln('<comment>Cache purge failed - you may need to purge manually.</comment>');
             }
         }
 
@@ -241,7 +241,7 @@ class StorefrontBuild extends BaseMahoCommand
         fclose($fp);
 
         if ($bytes === false || $bytes === 0) {
-            $output->writeln('<error>Download failed — no data received.</error>');
+            $output->writeln('<error>Download failed - no data received.</error>');
             @unlink($zipPath);
             return null;
         }
@@ -286,7 +286,7 @@ class StorefrontBuild extends BaseMahoCommand
         if (!is_dir($targetDir)) {
             if (!@mkdir($targetDir, 0755, true)) {
                 $output->writeln("<error>Cannot create directory: {$targetDir}</error>");
-                $output->writeln('<comment>Check file permissions — the storefront directory must be writable.</comment>');
+                $output->writeln('<comment>Check file permissions - the storefront directory must be writable.</comment>');
                 return null;
             }
         }
@@ -386,7 +386,7 @@ class StorefrontBuild extends BaseMahoCommand
     private function purgeCloudflareCache(array $credentials, OutputInterface $output): bool
     {
         if (!$credentials['apiKey'] || !$credentials['email'] || !$credentials['zoneId']) {
-            $output->writeln('<comment>Missing CF credentials — cannot purge cache.</comment>');
+            $output->writeln('<comment>Missing CF credentials - cannot purge cache.</comment>');
             return false;
         }
 

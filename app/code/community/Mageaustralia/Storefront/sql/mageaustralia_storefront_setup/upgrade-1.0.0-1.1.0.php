@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/**
+ * Maho Storefront Module
+ *
+ * @copyright Copyright (c) 2026 Mage Australia Pty Ltd (https://mageaustralia.com.au)
+ * @license   AGPL-3.0-only Open source release; a commercial licence is available
+ *            for buyers who do not want AGPL obligations. See LICENSE-COMMERCIAL.md.
+ */
+
 /** @var Mage_Core_Model_Resource_Setup $this */
 $installer = $this;
 $installer->startSetup();

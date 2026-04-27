@@ -6,8 +6,8 @@ declare(strict_types=1);
  * Mageaustralia
  *
  * @package    Mageaustralia_Storefront
- * @copyright  Copyright (c) 2026 Mageaustralia
- * @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright  Copyright (c) 2026 Mage Australia Pty Ltd (https://mageaustralia.com.au)
+ * @license    AGPL-3.0-only Open source release; commercial licence available. See LICENSE-COMMERCIAL.md.
  */
 
 class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Mage_Adminhtml_Controller_Action
@@ -104,7 +104,7 @@ class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Ma
                 'error' => $codeExists ? "Store code '{$storeCode}' already exists." : null,
             ];
 
-            // 2. Check DNS conflict — need to init client with the selected zone
+            // 2. Check DNS conflict - need to init client with the selected zone
             $cfClient = $this->getCfClientForZone($zoneId);
             $fqdn = $subdomain . '.' . $zoneName;
             $dnsRecords = $cfClient->listDnsRecords(['name' => $fqdn]);
@@ -165,7 +165,7 @@ class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Ma
                 return;
             }
 
-            // Resolve the actual Maho store view code — this is the authoritative source
+            // Resolve the actual Maho store view code - this is the authoritative source
             // It's used as both the KV prefix and the Maho API store code
             $mahoStore = Mage::app()->getStore($mahoStoreId);
             $storeCode = $mahoStore->getCode();
@@ -179,7 +179,7 @@ class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Ma
             $helper = Mage::helper('mageaustralia_storefront');
             $fqdn = $subdomain . '.' . $zoneName;
             $scriptName = $helper->getWorkerScriptName();
-            // Use the existing worker sync secret — the shared worker has a single SYNC_SECRET
+            // Use the existing worker sync secret - the shared worker has a single SYNC_SECRET
             $syncSecret = $helper->getSyncSecret();
 
             $steps = [
@@ -273,7 +273,7 @@ class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Ma
             ];
 
             if ($nextStep === null) {
-                // Provisioning complete — return summary
+                // Provisioning complete - return summary
                 $result['store_url'] = $params['storefront_url'];
                 $result['store_code'] = $params['store_code'];
                 $result['domain_type'] = $params['domain_type'];
@@ -401,7 +401,7 @@ class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Ma
                             $client->deleteDnsRecord($record['id']);
                         }
                     } catch (\Exception $e) {
-                        // Non-fatal — store already removed from registry
+                        // Non-fatal - store already removed from registry
                     }
                 }
 
@@ -480,7 +480,7 @@ class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Ma
                 return ['action' => 'registry', 'store_code' => $params['store_code']];
 
             case 'deploy_worker':
-                // Check if worker already exists — skip if so
+                // Check if worker already exists - skip if so
                 $cfClient = $this->getCfClientForZone($params['zone_id']);
                 if ($cfClient->workerExists($params['script_name'])) {
                     return null; // Already deployed
@@ -551,7 +551,7 @@ class Mageaustralia_Storefront_Adminhtml_Storefront_OnboardController extends Ma
                 $curlError = curl_errno($ch);
                 curl_close($ch);
 
-                // DNS not propagated yet — not an error, just skip
+                // DNS not propagated yet - not an error, just skip
                 if ($curlError === CURLE_COULDNT_RESOLVE_HOST) {
                     // Store will be accessible once DNS propagates
                     return null;

@@ -2,7 +2,7 @@
     "name": "mageaustralia/maho-storefront-module",
     "description": "Cloudflare Workers + KV sync companion module for the Maho Storefront. Manages worker deploy, content sync (CMS pages, blog, categories, products), and the admin dashboard.",
     "type": "maho-module",
-    "license": "OSL-3.0",
+    "license": "AGPL-3.0-only",
     "homepage": "https://github.com/mageaustralia/maho-storefront-module",
     "authors": [
         {

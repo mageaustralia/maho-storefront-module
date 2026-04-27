@@ -6,8 +6,8 @@ declare(strict_types=1);
  * Mageaustralia
  *
  * @package    Mageaustralia_Storefront
- * @copyright  Copyright (c) 2026 Mageaustralia
- * @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright  Copyright (c) 2026 Mage Australia Pty Ltd (https://mageaustralia.com.au)
+ * @license    AGPL-3.0-only Open source release; commercial licence available. See LICENSE-COMMERCIAL.md.
  */
 
 use Symfony\Component\HttpClient\HttpClient;

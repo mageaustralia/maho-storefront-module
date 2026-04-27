@@ -1,4 +1,4 @@
-# Mageaustralia_Storefront — Maho module
+# Mageaustralia_Storefront - Maho module
 
 Companion Maho-side module for the [Maho Storefront](https://github.com/mageaustralia/maho-storefront) (Cloudflare Workers, edge-rendered headless layer). Manages:
 

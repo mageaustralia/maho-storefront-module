@@ -5,7 +5,7 @@
  *
  * @package    MahoCLI
  * @copyright  Copyright (c) 2026 Maho (https://mahocommerce.com)
- * @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @license    AGPL-3.0-only Open source release; commercial licence available. See LICENSE-COMMERCIAL.md.
  */
 
 declare(strict_types=1);
@@ -27,8 +27,24 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class StorefrontThemeImport extends BaseMahoCommand
 {
-    private const STOREFRONT_DIR = '/var/www/maho.tenniswarehouse.com.au/maho-storefront';
-    private const MEDIA_DIR = '/var/www/maho.tenniswarehouse.com.au/web/public/media';
+    /**
+     * Filesystem path to the headless Maho Storefront checkout. Configured
+     * via mageaustralia_storefront/general/storefront_dir; falls back to
+     * a sibling directory of the Maho install.
+     */
+    private function storefrontDir(): string
+    {
+        $configured = (string) \Mage::getStoreConfig('mageaustralia_storefront/general/storefront_dir');
+        if ($configured !== '') {
+            return rtrim($configured, '/');
+        }
+        return rtrim(\Mage::getBaseDir(), '/') . '/../maho-storefront';
+    }
+
+    private function mediaDir(): string
+    {
+        return rtrim(\Mage::getBaseDir('media'), '/');
+    }
 
     private SymfonyStyle $io;
 
@@ -59,7 +75,7 @@ class StorefrontThemeImport extends BaseMahoCommand
         $noBackup = (bool) $input->getOption('no-backup');
 
         if ($dryRun) {
-            $this->io->note('DRY RUN — no changes will be made');
+            $this->io->note('DRY RUN - no changes will be made');
         }
 
         // Step 1: Validate package
@@ -77,7 +93,7 @@ class StorefrontThemeImport extends BaseMahoCommand
         $this->printImportSummary($manifest, $packagePath);
 
         if ($dryRun) {
-            $this->io->note('Dry run complete — no changes were made');
+            $this->io->note('Dry run complete - no changes were made');
             return Command::SUCCESS;
         }
 
@@ -127,7 +143,7 @@ class StorefrontThemeImport extends BaseMahoCommand
         $this->postImport($noSync, $deploy, $output);
 
         if ($errors > 0) {
-            $this->io->warning("Import completed with {$errors} error(s) — check output above");
+            $this->io->warning("Import completed with {$errors} error(s) - check output above");
             return Command::FAILURE;
         }
 
@@ -262,7 +278,7 @@ class StorefrontThemeImport extends BaseMahoCommand
     {
         $timestamp = date('Ymd_His');
 
-        $stylesSrc = self::STOREFRONT_DIR . '/public/styles.css';
+        $stylesSrc = $this->storefrontDir() . '/public/styles.css';
         if (file_exists($stylesSrc)) {
             $backupPath = $stylesSrc . ".bak.{$timestamp}";
             copy($stylesSrc, $backupPath);
@@ -271,7 +287,7 @@ class StorefrontThemeImport extends BaseMahoCommand
             }
         }
 
-        $themeSrc = self::STOREFRONT_DIR . '/theme.json';
+        $themeSrc = $this->storefrontDir() . '/theme.json';
         if (file_exists($themeSrc)) {
             $backupPath = $themeSrc . ".bak.{$timestamp}";
             copy($themeSrc, $backupPath);
@@ -286,7 +302,7 @@ class StorefrontThemeImport extends BaseMahoCommand
     private function copyStylesCss(string $packagePath): bool
     {
         $src = $packagePath . '/styles.css';
-        $dest = self::STOREFRONT_DIR . '/public/styles.css';
+        $dest = $this->storefrontDir() . '/public/styles.css';
 
         if (!copy($src, $dest)) {
             $this->io->error('Failed to copy styles.css');
@@ -300,7 +316,7 @@ class StorefrontThemeImport extends BaseMahoCommand
     private function copyThemeJson(string $packagePath): bool
     {
         $src = $packagePath . '/theme.json';
-        $dest = self::STOREFRONT_DIR . '/theme.json';
+        $dest = $this->storefrontDir() . '/theme.json';
 
         if (!copy($src, $dest)) {
             $this->io->error('Failed to copy theme.json');
@@ -318,7 +334,7 @@ class StorefrontThemeImport extends BaseMahoCommand
         // Copy logo (auto-convert to webp)
         if (!empty($manifest['logo'])) {
             $src = $packagePath . '/' . $manifest['logo'];
-            $destDir = self::MEDIA_DIR . '/wysiwyg/theme';
+            $destDir = $this->mediaDir() . '/wysiwyg/theme';
             if (!is_dir($destDir)) {
                 mkdir($destDir, 0755, true);
             }
@@ -347,7 +363,7 @@ class StorefrontThemeImport extends BaseMahoCommand
                     }
                 }
             } else {
-                // SVG or already webp — copy as-is
+                // SVG or already webp - copy as-is
                 $dest = $destDir . '/' . basename($manifest['logo']);
                 if (copy($src, $dest)) {
                     $this->io->text('  Logo → media/wysiwyg/theme/' . basename($manifest['logo']));
@@ -361,7 +377,7 @@ class StorefrontThemeImport extends BaseMahoCommand
         // Copy category images (auto-convert to webp)
         foreach ($manifest['categoryImages'] ?? [] as $urlKey => $imagePath) {
             $src = $packagePath . '/' . $imagePath;
-            $destDir = self::MEDIA_DIR . '/catalog/category';
+            $destDir = $this->mediaDir() . '/catalog/category';
             if (!is_dir($destDir)) {
                 mkdir($destDir, 0755, true);
             }
@@ -397,7 +413,7 @@ class StorefrontThemeImport extends BaseMahoCommand
         // Copy any other images in the images/ directory to wysiwyg/theme/
         $imagesDir = $packagePath . '/images';
         if (is_dir($imagesDir)) {
-            $destDir = self::MEDIA_DIR . '/wysiwyg/theme';
+            $destDir = $this->mediaDir() . '/wysiwyg/theme';
             if (!is_dir($destDir)) {
                 mkdir($destDir, 0755, true);
             }
@@ -547,7 +563,7 @@ class StorefrontThemeImport extends BaseMahoCommand
                     ->getFirstItem();
 
                 if (!$category->getId()) {
-                    $this->io->warning("Category not found for url_key: {$urlKey} — skipping image assignment");
+                    $this->io->warning("Category not found for url_key: {$urlKey} - skipping image assignment");
                     continue;
                 }
 
@@ -657,7 +673,7 @@ class StorefrontThemeImport extends BaseMahoCommand
             // Load product by SKU
             $productId = Mage::getModel('catalog/product')->getIdBySku($sku);
             if (!$productId) {
-                $this->io->warning("Product not found for SKU: {$sku} — skipping");
+                $this->io->warning("Product not found for SKU: {$sku} - skipping");
                 continue;
             }
 
@@ -687,7 +703,7 @@ class StorefrontThemeImport extends BaseMahoCommand
                     }
                 }
 
-                // Import via media gallery — handles file copy + sets all 3 image attributes
+                // Import via media gallery - handles file copy + sets all 3 image attributes
                 $product->addImageToMediaGallery(
                     $importFile,
                     ['image', 'small_image', 'thumbnail'],
@@ -737,10 +753,10 @@ class StorefrontThemeImport extends BaseMahoCommand
 
         // Trigger storefront sync
         if (!$noSync) {
-            $syncScript = self::STOREFRONT_DIR . '/sync.sh';
+            $syncScript = $this->storefrontDir() . '/sync.sh';
             if (file_exists($syncScript)) {
                 $this->io->text('Running storefront sync (cms + config)...');
-                $cmd = sprintf('cd %s && bash sync.sh cms config 2>&1', escapeshellarg(self::STOREFRONT_DIR));
+                $cmd = sprintf('cd %s && bash sync.sh cms config 2>&1', escapeshellarg($this->storefrontDir()));
                 exec($cmd, $syncOutput, $exitCode);
 
                 if ($exitCode === 0) {
@@ -752,7 +768,7 @@ class StorefrontThemeImport extends BaseMahoCommand
                     }
                 }
             } else {
-                $this->io->warning('sync.sh not found — skipping storefront sync');
+                $this->io->warning('sync.sh not found - skipping storefront sync');
             }
         } else {
             $this->io->text('Storefront sync skipped (--no-sync)');
@@ -760,10 +776,10 @@ class StorefrontThemeImport extends BaseMahoCommand
 
         // Deploy if requested
         if ($deploy) {
-            $deployScript = self::STOREFRONT_DIR . '/deploy.sh';
+            $deployScript = $this->storefrontDir() . '/deploy.sh';
             if (file_exists($deployScript)) {
                 $this->io->text('Deploying Cloudflare Worker...');
-                $cmd = sprintf('cd %s && bash deploy.sh 2>&1', escapeshellarg(self::STOREFRONT_DIR));
+                $cmd = sprintf('cd %s && bash deploy.sh 2>&1', escapeshellarg($this->storefrontDir()));
                 exec($cmd, $deployOutput, $exitCode);
 
                 if ($exitCode === 0) {
@@ -775,7 +791,7 @@ class StorefrontThemeImport extends BaseMahoCommand
                     }
                 }
             } else {
-                $this->io->warning('deploy.sh not found — skipping deployment');
+                $this->io->warning('deploy.sh not found - skipping deployment');
             }
         }
     }

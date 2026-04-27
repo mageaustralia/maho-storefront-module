@@ -6,8 +6,8 @@ declare(strict_types=1);
  * Mageaustralia
  *
  * @package    Mageaustralia_Storefront
- * @copyright  Copyright (c) 2026 Mageaustralia
- * @license    https://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright  Copyright (c) 2026 Mage Australia Pty Ltd (https://mageaustralia.com.au)
+ * @license    AGPL-3.0-only Open source release; commercial licence available. See LICENSE-COMMERCIAL.md.
  */
 
 class Mageaustralia_Storefront_Block_Adminhtml_System_Config_DiscoverButton extends Mage_Adminhtml_Block_System_Config_Form_Field
@@ -67,7 +67,7 @@ async function storefrontDiscover(btn) {
             accountEl.value = r.accounts[0].id;
         }
 
-        // Auto-fill Zone ID — try to match the store's base URL domain
+        // Auto-fill Zone ID - try to match the store's base URL domain
         var zoneEl = document.getElementById('{$prefix}zone_id');
         if (zoneEl && r.zones && r.zones.length > 0) {
             // Try to match based on current base URL
@@ -102,9 +102,9 @@ async function storefrontDiscover(btn) {
                 for (var j = 0; j < r.zones.length; j++) {
                     if (r.zones[j].id === zoneEl.value) { zoneName = r.zones[j].name; break; }
                 }
-                summary += ' — matched ' + zoneName;
+                summary += ' - matched ' + zoneName;
             } else if (r.zones.length > 1) {
-                summary += ' — multiple zones found, please select:';
+                summary += ' - multiple zones found, please select:';
                 // Show zone picker
                 var picker = '<br/><select onchange="document.getElementById(\'{$prefix}zone_id\').value=this.value" style="margin-top:4px">';
                 picker += '<option value="">-- Select Zone --</option>';

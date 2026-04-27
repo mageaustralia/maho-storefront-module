@@ -3,13 +3,21 @@
 declare(strict_types=1);
 
 /**
+ * Maho Storefront Module
+ *
+ * @copyright Copyright (c) 2026 Mage Australia Pty Ltd (https://mageaustralia.com.au)
+ * @license   AGPL-3.0-only Open source release; a commercial licence is available
+ *            for buyers who do not want AGPL obligations. See LICENSE-COMMERCIAL.md.
+ */
+
+/**
  * Rewrite of the checkout success page controller.
  *
  * If the order was placed via the headless storefront (has storefront_origin),
  * redirect the customer to the storefront success page with a one-time
  * verification token. Otherwise, render the normal Maho success page.
  *
- * This is transparent to payment modules — they redirect to
+ * This is transparent to payment modules - they redirect to
  * checkout/onepage/success as usual, and this rewrite handles the rest.
  */
 class Mageaustralia_Storefront_OnepageController extends Mage_Checkout_OnepageController
@@ -32,7 +40,7 @@ class Mageaustralia_Storefront_OnepageController extends Mage_Checkout_OnepageCo
             }
         }
 
-        // No storefront origin — render the normal Maho success page
+        // No storefront origin - render the normal Maho success page
         parent::successAction();
     }
 
