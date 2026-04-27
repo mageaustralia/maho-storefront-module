@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": ">=8.3",
-        "mahocommerce/maho": ">=26.0"
+        "mahocommerce/maho": "^26.0"
     },
     "autoload": {
         "psr-0": {
@@ -31,12 +31,6 @@
         }
     },
     "extra": {
-        "map": [
-            ["app/code/community/Mageaustralia/Storefront", "app/code/community/Mageaustralia/Storefront"],
-            ["app/design/adminhtml/default/default/layout/mageaustralia_storefront.xml", "app/design/adminhtml/default/default/layout/mageaustralia_storefront.xml"],
-            ["app/design/adminhtml/default/default/template/mageaustralia/storefront", "app/design/adminhtml/default/default/template/mageaustralia/storefront"],
-            ["app/etc/modules/Mageaustralia_Storefront.xml", "app/etc/modules/Mageaustralia_Storefront.xml"],
-            ["app/locale/en_US/Mageaustralia_Storefront.csv", "app/locale/en_US/Mageaustralia_Storefront.csv"]
-        ]
+        "maho-module-dir": "app/code/community/Mageaustralia/Storefront"
     }
 }
