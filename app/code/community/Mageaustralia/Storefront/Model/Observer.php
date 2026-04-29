@@ -231,6 +231,14 @@ class Mageaustralia_Storefront_Model_Observer
      */
     public function releaseSessionForReadRequest(Maho\Event\Observer $observer): void
     {
+        // Skip ALL admin requests regardless of front-name. Module name alone
+        // can't catch this - sites may rename the admin frontname, so admin
+        // GETs would slip past a hardcoded list and corrupt session writes.
+        $controller = $observer->getEvent()->getControllerAction();
+        if ($controller instanceof Mage_Adminhtml_Controller_Action) {
+            return;
+        }
+
         $request = Mage::app()->getRequest();
 
         // Only for GET/HEAD (read-only) requests
