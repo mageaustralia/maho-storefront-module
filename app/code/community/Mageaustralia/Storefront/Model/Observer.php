@@ -252,6 +252,16 @@ class Mageaustralia_Storefront_Model_Observer
             return;
         }
 
+        // Don't release if there are pending flash messages that need to be consumed
+        try {
+            $coreSession = Mage::getSingleton('core/session');
+            $adminSession = Mage::getSingleton('adminhtml/session');
+            if ($coreSession->getMessages()->count() > 0 || $adminSession->getMessages()->count() > 0) {
+                return;
+            }
+        } catch (\Exception $e) {
+        }
+
         // Release the session write lock - data is still readable from $_SESSION
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();
