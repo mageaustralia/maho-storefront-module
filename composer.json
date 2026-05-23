@@ -28,7 +28,11 @@
     "autoload": {
         "psr-0": {
             "Mageaustralia_Storefront_": "app/code/community/"
-        }
+        },
+        "files": [
+            "lib/MahoCLI/Commands/StorefrontBuild.php",
+            "lib/MahoCLI/Commands/StorefrontThemeImport.php"
+        ]
     },
     "extra": {
         "maho-module-dir": "app/code/community/Mageaustralia/Storefront"
