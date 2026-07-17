@@ -246,9 +246,15 @@ class Mageaustralia_Storefront_Model_Observer
             return;
         }
 
-        // Don't release session on pages that clear flash messages or modify session
+        // Don't release session on pages that clear flash messages or modify session.
+        // 'fpc' is the FPC hole-punch endpoint (/fpc/dynamic): it is a GET but it
+        // MINTS and must PERSIST session state (form_key + cleared messages). Releasing
+        // the session lock here commits/closes the session in predispatch, so the
+        // freshly-minted form_key added by the action later never reaches the session
+        // store (Redis) - desyncing every rendered form and tripping "Invalid form key"
+        // on cold add-to-cart / login after an FPC-cached (nginx-static) page landing.
         $module = $request->getModuleName();
-        if (in_array($module, ['checkout', 'customer', 'onestepcheckout', 'firecheckout', 'admin', 'adminhtml'], true)) {
+        if (in_array($module, ['checkout', 'customer', 'onestepcheckout', 'firecheckout', 'admin', 'adminhtml', 'fpc'], true)) {
             return;
         }
 
