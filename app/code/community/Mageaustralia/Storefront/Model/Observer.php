@@ -139,7 +139,7 @@ class Mageaustralia_Storefront_Model_Observer
 
         try {
             /** @var Mage_Core_Model_Flag $flag */
-            $flag = Mage::getModel('core/flag', ['flag_code' => 'storefront_sync_queue'])->loadSelf();
+            $flag = Mage::getModel('core/flag')->setFlagCode('storefront_sync_queue')->loadSelf();
             $existing = $flag->getFlagData() ?: [];
 
             // Merge new invalidations with any already-queued ones
@@ -160,7 +160,7 @@ class Mageaustralia_Storefront_Model_Observer
     public function processQueuedInvalidations(): void
     {
         /** @var Mage_Core_Model_Flag $flag */
-        $flag = Mage::getModel('core/flag', ['flag_code' => 'storefront_sync_queue'])->loadSelf();
+        $flag = Mage::getModel('core/flag')->setFlagCode('storefront_sync_queue')->loadSelf();
         $queued = $flag->getFlagData();
 
         if (empty($queued)) {
@@ -239,6 +239,23 @@ class Mageaustralia_Storefront_Model_Observer
             return;
         }
 
+        // Only FILE-based sessions serialise concurrent requests, which is the 503 this
+        // optimisation exists to avoid. Maho's Redis backend uses Symfony's
+        // RedisSessionHandler, which does no locking whatsoever - there is no lock to
+        // release, so closing the session early buys exactly nothing while still
+        // discarding every subsequent write. And it discards them SILENTLY, because
+        // session.lazy_write is on: no warning, no error, just lost data.
+        //
+        // That combination has now cost two production-class bugs - form_key desync via
+        // /fpc/dynamic, and paid Afterpay orders landing on an empty cart because
+        // lastSuccessQuoteId never persisted. Gate on the backend so the optimisation is
+        // inert unless it can actually help, and re-arms by itself if the store is ever
+        // moved back to file sessions.
+        $sessionSave = strtolower(trim((string) Mage::getConfig()->getNode('global/session_save')));
+        if ($sessionSave !== '' && $sessionSave !== 'files') {
+            return;
+        }
+
         $request = Mage::app()->getRequest();
 
         // Only for GET/HEAD (read-only) requests
@@ -246,15 +263,28 @@ class Mageaustralia_Storefront_Model_Observer
             return;
         }
 
-        // Don't release session on pages that clear flash messages or modify session.
-        // 'fpc' is the FPC hole-punch endpoint (/fpc/dynamic): it is a GET but it
-        // MINTS and must PERSIST session state (form_key + cleared messages). Releasing
-        // the session lock here commits/closes the session in predispatch, so the
-        // freshly-minted form_key added by the action later never reaches the session
-        // store (Redis) - desyncing every rendered form and tripping "Invalid form key"
-        // on cold add-to-cart / login after an FPC-cached (nginx-static) page landing.
+        // Release ONLY on the read-only browse routes this optimisation was written for.
+        //
+        // This was previously a deny-list, which fails open: any route not on it got its
+        // session closed, and a route is easy to miss. /afterpay/payment/return/ is a GET
+        // and was not listed, so the session was committed at predispatch - and the order
+        // that request went on to create then wrote lastSuccessQuoteId into a session that
+        // was never persisted. The shopper paid, the order existed, and
+        // checkout/onepage/success saw an empty key and bounced them to an empty cart.
+        // Every payment gateway that returns via GET (PayPal, Zip, ...) had the same
+        // exposure, and any gateway added later would have inherited it.
+        //
+        // An allow-list fails safe instead: an unlisted route simply keeps normal PHP
+        // session behaviour. The prefetch-503 problem this addresses is a browse-page
+        // problem, and these are the browse pages.
+        //
+        // (Previously excluded for the same underlying reason: checkout, customer,
+        // onestepcheckout, firecheckout, admin, adminhtml, and fpc - the FPC hole-punch
+        // endpoint /fpc/dynamic MINTS a form_key that must persist, and committing the
+        // session in predispatch desynced every rendered form.)
         $module = $request->getModuleName();
-        if (in_array($module, ['checkout', 'customer', 'onestepcheckout', 'firecheckout', 'admin', 'adminhtml', 'fpc'], true)) {
+        $releasableModules = ['catalog', 'catalogsearch', 'cms'];
+        if (!in_array($module, $releasableModules, true)) {
             return;
         }
 
